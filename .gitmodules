@@ -1,0 +1,3 @@
+[submodule "studio"]
+	path = studio
+	url = git@github.com:Radical-Tools/Radical.Studio.git
