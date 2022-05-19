@@ -1,8 +1,13 @@
 {
   "name": "radical-tools-studio",
-  "displayName": "Radical Studio",
+  "displayName": "Radical.Studio",
   "description": "",
   "version": "0.0.1",
+  "publisher": "RadicalStudio",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Radical-Tools/Radical.Studio-vscode.git"
+  },
   "engines": {
     "vscode": "^1.67.0"
   },

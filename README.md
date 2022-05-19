@@ -1,6 +1,6 @@
 # radical-tools-studio README
 
-This is the README for your extension "radical-tools-studio". After writing up a brief description, we recommend including the following sections.
+This is the README for "radical-tools-studio". After writing up a brief description, we recommend including the following sections.
 
 ## development
 
