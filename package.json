@@ -17,14 +17,27 @@
     "Graphs"
   ],
   "activationEvents": [
-    "onCommand:radical-tools-studio.helloWorld"
+    "onCustomEditor:radical-tools-studio.editor",
+    "onCommand:radical-tools-studio.new"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "radical-tools-studio.helloWorld",
-        "title": "Hello World"
+        "command": "radical-tools-studio.new",
+        "title": "Create new Radical diagram",
+        "category": "Radical Tools"
+      }
+    ],
+    "customEditors": [
+      {
+        "viewType": "radical-tools-studio.editor",
+        "displayName": "Radical Studio View",
+        "selector": [
+          {
+            "filenamePattern": "*.radical"
+          }
+        ]
       }
     ]
   },
@@ -34,7 +47,9 @@
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
+    "test": "node ./out/test/runTest.js",
+    "postinstall": "cd studio && npm install",
+    "build:studio": "node scripts/build-studio.js"
   },
   "devDependencies": {
     "@types/vscode": "^1.67.0",
