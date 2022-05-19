@@ -2,14 +2,15 @@
   "name": "radical-tools-studio",
   "displayName": "Radical.Studio",
   "description": "",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "Radical-Tools",
+  "icon": "radical-icon.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/Radical-Tools/Radical.Studio-vscode.git"
   },
   "engines": {
-    "vscode": "^1.67.0"
+    "vscode": "^1.60.0"
   },
   "categories": [
     "Visualization"
@@ -54,7 +55,7 @@
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js",
     "postinstall": "cd studio && npm install",
-    "build:studio": "node scripts/build-studio.js"
+    "build:studio": "bash ./scripts/build-studio.sh"
   },
   "devDependencies": {
     "@types/vscode": "^1.67.0",

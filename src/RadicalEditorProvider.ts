@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import { getNonce } from "./vscode-utils/get-nonce";
 
 export class RadicalEditorProvider implements vscode.CustomTextEditorProvider {
   private static newFileCounter = 1;
@@ -40,16 +39,16 @@ export class RadicalEditorProvider implements vscode.CustomTextEditorProvider {
 
     webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview);
 
-    function updateWebview() {
+    function updateStudioData() {
       webviewPanel.webview.postMessage({
-        type: "update",
-        text: document.getText(),
+        type: "update-data",
+        json: document.getText(),
       });
     }
 
     const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument((e) => {
       if (e.document.uri.toString() === document.uri.toString()) {
-        updateWebview();
+        updateStudioData();
       }
     });
 
@@ -61,20 +60,16 @@ export class RadicalEditorProvider implements vscode.CustomTextEditorProvider {
     // Receive message from the webview.
     webviewPanel.webview.onDidReceiveMessage((e) => {
       switch (e.type) {
-        default:
-          console.log(e);
+        case "change":
+          this.updateTextDocument(document, e.json);
           return;
-        // case "add":
-        //   this.addNewScratch(document);
-        //   return;
 
-        // case "delete":
-        //   this.deleteScratch(document, e.id);
-        //   return;
+        default:
+          return;
       }
     });
 
-    updateWebview();
+    updateStudioData();
   }
 
   private getHtmlForWebview(webview: vscode.Webview): string {
@@ -88,6 +83,7 @@ export class RadicalEditorProvider implements vscode.CustomTextEditorProvider {
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <script>(function(){ window.isExtension = true; })()</script>
           <script defer="defer" src="${scriptUri}"></script>
           <link href="${stylesUri}" rel="stylesheet" />
           <title>Radical Studio</title>
@@ -99,23 +95,9 @@ export class RadicalEditorProvider implements vscode.CustomTextEditorProvider {
 			</html>`;
   }
 
-  // private getDocumentAsJson(document: vscode.TextDocument): any {
-  //   const text = document.getText();
-
-  //   if (text.trim().length === 0) {
-  //     return {};
-  //   }
-
-  //   try {
-  //     return JSON.parse(text);
-  //   } catch {
-  //     throw new Error("Could not get document as json. Content is not valid json");
-  //   }
-  // }
-
-  // private updateTextDocument(document: vscode.TextDocument, json: any) {
-  //   const edit = new vscode.WorkspaceEdit();
-  //   edit.replace(document.uri, new vscode.Range(0, 0, document.lineCount, 0), JSON.stringify(json, null, 2));
-  //   return vscode.workspace.applyEdit(edit);
-  // }
+  private updateTextDocument(document: vscode.TextDocument, json: any) {
+    const edit = new vscode.WorkspaceEdit();
+    edit.replace(document.uri, new vscode.Range(0, 0, document.lineCount, 0), JSON.stringify(json, null, 2));
+    return vscode.workspace.applyEdit(edit);
+  }
 }
