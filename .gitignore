@@ -1,3 +1,4 @@
 /node_modules
 /out
 /studio-dist
+*.vsix
