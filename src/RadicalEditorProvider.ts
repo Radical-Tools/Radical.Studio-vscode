@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
 
 export class RadicalEditorProvider implements vscode.CustomTextEditorProvider {
+  private static metamodel: string;
   private static projectTitle: string;
-  private static newFileCounter = 1;
   private static readonly viewType = "radical-tools-studio.editor";
 
   constructor(private readonly context: vscode.ExtensionContext) {}
@@ -18,12 +18,25 @@ export class RadicalEditorProvider implements vscode.CustomTextEditorProvider {
 
       // Show input for project title
       vscode.window.showInputBox({ title: "Project Title" }).then((projectTitle) => {
-        this.projectTitle = projectTitle || `new-${RadicalEditorProvider.newFileCounter++}`;
+        if (!projectTitle) {
+          return;
+        }
 
-        const uri = vscode.Uri.joinPath(workspaceFolders[0].uri, `${this.projectTitle}.radical`).with({
-          scheme: "untitled",
+        this.projectTitle = projectTitle;
+
+        vscode.window.showQuickPick(["C4", "ERD"], { canPickMany: false, title: "Meta Model" }).then((metamodel) => {
+          if (!metamodel) {
+            return;
+          }
+
+          this.metamodel = metamodel;
+
+          const uri = vscode.Uri.joinPath(workspaceFolders[0].uri, `${this.projectTitle}.radical`).with({
+            scheme: "untitled",
+          });
+
+          vscode.commands.executeCommand("vscode.openWith", uri, RadicalEditorProvider.viewType);
         });
-        vscode.commands.executeCommand("vscode.openWith", uri, RadicalEditorProvider.viewType);
       });
     });
 
@@ -48,6 +61,7 @@ export class RadicalEditorProvider implements vscode.CustomTextEditorProvider {
         type: "update-data",
         json: document.getText(),
         title: RadicalEditorProvider.projectTitle,
+        metamodel: RadicalEditorProvider.metamodel,
       });
     }
 
