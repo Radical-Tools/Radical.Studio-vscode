@@ -2,7 +2,7 @@
   "name": "radical-tools-studio",
   "displayName": "Radical.Studio",
   "description": "",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "publisher": "Radical-Tools",
   "icon": "radical-icon.png",
   "repository": {
@@ -55,7 +55,8 @@
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js",
     "postinstall": "cd studio && npm install",
-    "build:studio": "bash ./scripts/build-studio.sh"
+    "build:studio": "bash ./scripts/build-studio.sh",
+    "publish": "vsce publish"
   },
   "devDependencies": {
     "@types/glob": "^7.2.0",

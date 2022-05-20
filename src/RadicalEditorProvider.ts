@@ -31,11 +31,11 @@ export class RadicalEditorProvider implements vscode.CustomTextEditorProvider {
 
           this.metamodel = metamodel;
 
-          const uri = vscode.Uri.joinPath(workspaceFolders[0].uri, `${this.projectTitle}.radical`).with({
-            scheme: "untitled",
-          });
+          const targetUri = vscode.Uri.joinPath(workspaceFolders[0].uri, `${this.projectTitle}.radical`);
 
-          vscode.commands.executeCommand("vscode.openWith", uri, RadicalEditorProvider.viewType);
+          vscode.workspace.fs.writeFile(targetUri, new Uint8Array()).then(() => {
+            vscode.commands.executeCommand("vscode.openWith", targetUri, RadicalEditorProvider.viewType);
+          });
         });
       });
     });
