@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 
 export class RadicalEditorProvider implements vscode.CustomTextEditorProvider {
+  private static projectTitle: string;
   private static newFileCounter = 1;
   private static readonly viewType = "radical-tools-studio.editor";
 
@@ -15,12 +16,15 @@ export class RadicalEditorProvider implements vscode.CustomTextEditorProvider {
         return;
       }
 
-      const uri = vscode.Uri.joinPath(
-        workspaceFolders[0].uri,
-        `new-${RadicalEditorProvider.newFileCounter++}.radical`
-      ).with({ scheme: "untitled" });
+      // Show input for project title
+      vscode.window.showInputBox({ title: "Project Title" }).then((projectTitle) => {
+        this.projectTitle = projectTitle || `new-${RadicalEditorProvider.newFileCounter++}`;
 
-      vscode.commands.executeCommand("vscode.openWith", uri, RadicalEditorProvider.viewType);
+        const uri = vscode.Uri.joinPath(workspaceFolders[0].uri, `${this.projectTitle}.radical`).with({
+          scheme: "untitled",
+        });
+        vscode.commands.executeCommand("vscode.openWith", uri, RadicalEditorProvider.viewType);
+      });
     });
 
     const provider = new RadicalEditorProvider(context);
@@ -43,6 +47,7 @@ export class RadicalEditorProvider implements vscode.CustomTextEditorProvider {
       webviewPanel.webview.postMessage({
         type: "update-data",
         json: document.getText(),
+        title: RadicalEditorProvider.projectTitle,
       });
     }
 
@@ -60,6 +65,10 @@ export class RadicalEditorProvider implements vscode.CustomTextEditorProvider {
     // Receive message from the webview.
     webviewPanel.webview.onDidReceiveMessage((e) => {
       switch (e.type) {
+        case "application-init":
+          updateStudioData();
+          return;
+
         case "change":
           this.updateTextDocument(document, e.json);
           return;
@@ -68,8 +77,6 @@ export class RadicalEditorProvider implements vscode.CustomTextEditorProvider {
           return;
       }
     });
-
-    updateStudioData();
   }
 
   private getHtmlForWebview(webview: vscode.Webview): string {
@@ -87,6 +94,12 @@ export class RadicalEditorProvider implements vscode.CustomTextEditorProvider {
           <script defer="defer" src="${scriptUri}"></script>
           <link href="${stylesUri}" rel="stylesheet" />
           <title>Radical Studio</title>
+          <style>
+            html, body, div {
+              margin: 0;
+              padding: 0;
+            }
+          </style>
         </head>
         
         <body>
